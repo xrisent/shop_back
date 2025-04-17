@@ -10,7 +10,17 @@ import { OrderModule } from './order/order.module';
 import { UserModule } from './user/user.module';
 import { CouponModule } from './coupon/coupon.module';
 import { CartModule } from './cart/cart.module';
-import { StockModule } from './stock/stock.module';
+import { Category } from './category/entities/category.entity';
+import { Color } from './color/entities/color.entity';
+import { Size } from './size/entities/size.entity';
+import { Product } from './product/entities/product.entity';
+import { Order } from './order/entities/order.entity';
+import { User } from './user/entities/user.entity';
+import { Coupon } from './coupon/entities/coupon.entity';
+import { Cart } from './cart/entities/cart.entity';
+import { CartItem } from './cart-item/cart-item';
+import { OrderItem } from './order-item/order-item';
+import { ProductStock } from './product-stock/product-stock';
 
 @Module({
   imports: [
@@ -21,9 +31,10 @@ import { StockModule } from './stock/stock.module';
       username: process.env.DB_USERNAME, 
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,  
-      entities: [],
+      entities: [Category, Color, Size, Product, Order, User, Coupon, Cart, CartItem, OrderItem, ProductStock],
       synchronize: true, 
     }),
+    TypeOrmModule.forFeature([Category, Color, Size, Product, Order, User, Coupon, Cart, CartItem, OrderItem, ProductStock]),
     CategoryModule,
     ColorModule,
     SizeModule,
@@ -32,7 +43,6 @@ import { StockModule } from './stock/stock.module';
     UserModule,
     CouponModule,
     CartModule,
-    StockModule,
   ],
   controllers: [AppController],
   providers: [AppService],

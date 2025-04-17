@@ -1,26 +1,36 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Size } from './entities/size.entity';
 import { CreateSizeDto } from './dto/create-size.dto';
 import { UpdateSizeDto } from './dto/update-size.dto';
 
 @Injectable()
 export class SizeService {
-  create(createSizeDto: CreateSizeDto) {
-    return 'This action adds a new size';
+  constructor(
+    @InjectRepository(Size)
+    private readonly sizeRepository: Repository<Size>,
+  ) {}
+
+  create(createSizeDto: CreateSizeDto): Promise<Size> {
+    const size = this.sizeRepository.create(createSizeDto);
+    return this.sizeRepository.save(size);
   }
 
-  findAll() {
-    return `This action returns all size`;
+  findAll(): Promise<Size[]> {
+    return this.sizeRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} size`;
+  findOne(id: number): Promise<Size | null> {
+    return this.sizeRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateSizeDto: UpdateSizeDto) {
-    return `This action updates a #${id} size`;
+  async update(id: number, updateSizeDto: UpdateSizeDto): Promise<Size | null> {
+    await this.sizeRepository.update(id, updateSizeDto);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} size`;
+  async remove(id: number): Promise<void> {
+    await this.sizeRepository.delete(id);
   }
 }

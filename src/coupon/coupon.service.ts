@@ -1,26 +1,36 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Coupon } from './entities/coupon.entity';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 
 @Injectable()
 export class CouponService {
-  create(createCouponDto: CreateCouponDto) {
-    return 'This action adds a new coupon';
+  constructor(
+    @InjectRepository(Coupon)
+    private readonly couponRepository: Repository<Coupon>,
+  ) {}
+
+  create(createCouponDto: CreateCouponDto): Promise<Coupon> {
+    const coupon = this.couponRepository.create(createCouponDto);
+    return this.couponRepository.save(coupon);
   }
 
-  findAll() {
-    return `This action returns all coupon`;
+  findAll(): Promise<Coupon[]> {
+    return this.couponRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} coupon`;
+  findOne(id: number): Promise<Coupon | null> {
+    return this.couponRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateCouponDto: UpdateCouponDto) {
-    return `This action updates a #${id} coupon`;
+  async update(id: number, updateCouponDto: UpdateCouponDto): Promise<Coupon | null> {
+    await this.couponRepository.update(id, updateCouponDto);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} coupon`;
+  async remove(id: number): Promise<void> {
+    await this.couponRepository.delete(id);
   }
 }

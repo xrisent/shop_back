@@ -1,31 +1,23 @@
-// src/order/order.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Coupon } from 'src/coupon/entities/coupon.entity';
-import { Product } from 'src/product/entities/product.entity';
-import { Color } from 'src/color/entities/color.entity';
-import { Size } from 'src/size/entities/size.entity';
+import { OrderItem } from 'src/order-item/order-item';
 
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.history)
+  @ManyToOne(() => User, user => user.history)
   user: User;
 
-  @Column("simple-array")
-  products: {
-    product: Product;
-    color: Color;
-    size: Size;
-    quantity: number;
-  }[];
+  @Column('json')
+  products: OrderItem[];
 
   @Column()
   createdAt: Date;
 
-  @ManyToOne(() => Coupon, (coupon) => coupon.orders)
+  @ManyToOne(() => Coupon)
   coupon: Coupon;
 
   @Column()

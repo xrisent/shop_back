@@ -1,8 +1,6 @@
-// src/user/user.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { Order } from 'src/order/entities/order.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
-import { Product } from 'src/product/entities/product.entity';
 
 @Entity()
 export class User {
@@ -24,12 +22,13 @@ export class User {
   @Column()
   address: string;
 
-  @OneToMany(() => Order, (order) => order.user)
+  @OneToMany(() => Order, order => order.user)
   history: Order[];
 
-  @ManyToOne(() => Cart, (cart) => cart.user)
+  @OneToOne(() => Cart, cart => cart.user)
+  @JoinColumn()
   cart: Cart;
 
-  @ManyToMany(() => Product, (product) => product.favorites)
-  favorites: Product[];
+  @Column('int', { array: true })
+  favorites: number[]; // или можно @ManyToMany
 }

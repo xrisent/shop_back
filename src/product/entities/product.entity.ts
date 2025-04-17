@@ -1,8 +1,6 @@
-// src/product/product.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Category } from 'src/category/entities/category.entity';
-import { Stock } from 'src/stock/entities/stock.entity';
-import { User } from 'src/user/entities/user.entity';
+import { ProductStock } from 'src/product-stock/product-stock';
 
 @Entity()
 export class Product {
@@ -21,11 +19,8 @@ export class Product {
   @Column()
   madeIn: string;
 
-  @ManyToOne(() => Category, (category) => category.products)
+  @ManyToOne(() => Category, category => category.products)
   category: Category;
-
-  @OneToMany(() => Stock, (stock) => stock.product)
-  stock: Stock[];
 
   @Column()
   createdAt: Date;
@@ -33,9 +28,9 @@ export class Product {
   @Column()
   mainImage: string;
 
-  @Column("simple-array")
+  @Column('text', { array: true })
   additionalImages: string[];
 
-  @ManyToMany(() => User, (user) => user.favorites)
-  favorites: User[];
+  @Column('json')
+  stock: ProductStock[];
 }

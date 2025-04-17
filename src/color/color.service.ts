@@ -1,26 +1,36 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Color } from './entities/color.entity';
 import { CreateColorDto } from './dto/create-color.dto';
 import { UpdateColorDto } from './dto/update-color.dto';
 
 @Injectable()
 export class ColorService {
-  create(createColorDto: CreateColorDto) {
-    return 'This action adds a new color';
+  constructor(
+    @InjectRepository(Color)
+    private readonly colorRepository: Repository<Color>,
+  ) {}
+
+  create(createColorDto: CreateColorDto): Promise<Color> {
+    const color = this.colorRepository.create(createColorDto);
+    return this.colorRepository.save(color);
   }
 
-  findAll() {
-    return `This action returns all color`;
+  findAll(): Promise<Color[]> {
+    return this.colorRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} color`;
+  findOne(id: number): Promise<Color | null> {
+    return this.colorRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateColorDto: UpdateColorDto) {
-    return `This action updates a #${id} color`;
+  async update(id: number, updateColorDto: UpdateColorDto): Promise<Color | null> {
+    await this.colorRepository.update(id, updateColorDto);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} color`;
+  async remove(id: number): Promise<void> {
+    await this.colorRepository.delete(id);
   }
 }

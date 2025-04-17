@@ -1,6 +1,4 @@
-// src/coupon/coupon.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Order } from 'src/order/entities/order.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Coupon {
@@ -15,7 +13,4 @@ export class Coupon {
 
   @Column()
   used: boolean;
-
-  @OneToMany(() => Order, (order) => order.coupon)
-  orders: Order[];
 }
