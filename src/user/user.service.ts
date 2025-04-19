@@ -4,17 +4,26 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CartService } from 'src/cart/cart.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly cartService: CartService,
   ) {}
 
-  create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(createUserDto);
-    return this.userRepository.save(user);
+    await this.userRepository.save(user);
+
+    const cart = await this.cartService.createForUser(user.id);
+    
+    user.cart = cart;
+    await this.userRepository.save(user);
+
+    return user;
   }
 
   findAll(): Promise<User[]> {
@@ -24,6 +33,12 @@ export class UserService {
     return this.userRepository.findOne({
       where: { id },
       relations: ['history', 'cart', 'favorites'],
+    });
+  }
+
+  findOneEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { email },
     });
   }
 

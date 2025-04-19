@@ -11,14 +11,16 @@ export class UpdateCouponDto extends PartialType(CreateCouponDto) {
   coupon?: string;
 
   @ApiProperty({
-    description: 'The discount percentage for the coupon (optional for updates)',
+    description:
+      'The discount percentage for the coupon (optional for updates)',
     example: 20,
     required: false,
   })
   discount?: number;
 
   @ApiProperty({
-    description: 'Indicates whether the coupon has been used or not (optional for updates)',
+    description:
+      'Indicates whether the coupon has been used or not (optional for updates)',
     example: false,
     required: false,
   })

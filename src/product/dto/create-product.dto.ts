@@ -21,10 +21,28 @@ export class CreateProductDto {
   price: number;
 
   @ApiProperty({
+    description: 'The old price of the product',
+    type: Number,
+  })
+  oldPrice: number;
+
+  @ApiProperty({
     description: 'The country where the product was made',
     type: String,
   })
   madeIn: string;
+
+  @ApiProperty({
+    description: 'The brand of the product',
+    type: String,
+  })
+  brand: string;
+
+  @ApiProperty({
+    description: 'The material of the product',
+    type: String,
+  })
+  material: string;
 
   @ApiProperty({
     description: 'The ID of the product category',

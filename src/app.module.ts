@@ -21,6 +21,7 @@ import { Cart } from './cart/entities/cart.entity';
 import { CartItem } from './cart-item/cart-item';
 import { OrderItem } from './order-item/order-item';
 import { ProductStock } from './product-stock/product-stock';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { ProductStock } from './product-stock/product-stock';
     UserModule,
     CouponModule,
     CartModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

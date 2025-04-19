@@ -17,9 +17,18 @@ export class Product {
   price: number;
 
   @Column()
+  oldPrice: number;
+
+  @Column()
   madeIn: string;
 
-  @ManyToOne(() => Category, category => category.products)
+  @Column()
+  brand: string;
+
+  @Column()
+  material: string;
+
+  @ManyToOne(() => Category, (category) => category.products)
   category: Category;
 
   @Column()

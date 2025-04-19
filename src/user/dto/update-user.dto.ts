@@ -18,6 +18,13 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   surname?: string;
 
   @ApiProperty({
+    description: 'Пароль',
+    type: String,
+    required: false
+  })
+  password?: string
+
+  @ApiProperty({
     description: 'Номер телефона пользователя',
     type: String,
     required: false,
