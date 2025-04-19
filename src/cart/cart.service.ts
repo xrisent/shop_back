@@ -7,6 +7,9 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 import { Product } from 'src/product/entities/product.entity';
 import { Coupon } from 'src/coupon/entities/coupon.entity';
 import { User } from 'src/user/entities/user.entity';
+import { Color } from 'src/color/entities/color.entity';
+import { Size } from 'src/size/entities/size.entity';
+import { CartItem } from 'src/cart-item/cart-item';
 
 @Injectable()
 export class CartService {
@@ -19,13 +22,17 @@ export class CartService {
     private readonly couponRepository: Repository<Coupon>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Color)
+    private readonly colorRepository: Repository<Color>,
+    @InjectRepository(Size)
+    private readonly sizeRepository: Repository<Size>,
   ) {}
 
   async calculatePrice(content: any[]): Promise<number> {
     let total = 0;
 
     for (const item of content) {
-      const productId = item.productId;
+      const productId = item.productId || item.product.id;
       if (!productId) {
         throw new NotFoundException(
           `Product id is missing in item: ${JSON.stringify(item)}`,
@@ -150,5 +157,78 @@ export class CartService {
 
   async remove(id: number): Promise<void> {
     await this.cartRepository.delete(id);
+  }
+
+  async addProductToCart(
+    cartId: number,
+    productId: number,
+    colorId?: number,
+    sizeId?: number,
+    quantity: number = 1
+  ): Promise<Cart> {
+    const cart = await this.cartRepository.findOne({ 
+      where: { id: cartId },
+      relations: ['user', 'coupon']
+    });
+    if (!cart) {
+      throw new NotFoundException(`Cart with id ${cartId} not found`);
+    }
+  
+    const product = await this.productRepository.findOne({ 
+      where: { id: productId }
+    });
+    if (!product) {
+      throw new NotFoundException(`Product with id ${productId} not found`);
+    }
+  
+    let color: Color | undefined = undefined;
+    if (colorId) {
+      const foundColor = await this.colorRepository.findOne({ where: { id: colorId } });
+      if (!foundColor) {
+        throw new NotFoundException(`Color with id ${colorId} not found`);
+      }
+      color = foundColor;
+    }
+  
+    let size: Size | undefined = undefined;
+    if (sizeId) {
+      const foundSize = await this.sizeRepository.findOne({ where: { id: sizeId } });
+      if (!foundSize) {
+        throw new NotFoundException(`Size with id ${sizeId} not found`);
+      }
+      size = foundSize;
+    }
+  
+    const cartItem: CartItem = {
+      product,
+      color,
+      size,
+      quantity
+    };
+  
+    if (!cart.content) {
+      cart.content = [];
+    }
+  
+    const existingItemIndex = cart.content.findIndex(item => 
+      item.product.id === productId &&
+      (item.color?.id || undefined) === (colorId || undefined) &&
+      (item.size?.id || undefined) === (sizeId || undefined)
+    );
+  
+    if (existingItemIndex >= 0) {
+      cart.content[existingItemIndex].quantity += quantity;
+    } else {
+      cart.content.push(cartItem);
+    }
+  
+    cart.price = await this.calculatePrice(cart.content);
+    if (cart.coupon) {
+      cart.couponPrice = await this.calculateCouponDiscount(cart.price, cart.coupon.id);
+    } else {
+      cart.couponPrice = cart.price;
+    }
+  
+    return this.cartRepository.save(cart);
   }
 }

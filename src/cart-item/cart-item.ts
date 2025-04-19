@@ -4,7 +4,7 @@ import { Size } from 'src/size/entities/size.entity';
 
 export class CartItem {
   product: Product;
-  color: Color;
-  size: Size;
+  color?: Color; 
+  size?: Size;
   quantity: number;
 }

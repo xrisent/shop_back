@@ -86,5 +86,35 @@ export class CartController {
     return this.cartService.applyCoupon(+cartId, +couponId);
   }
 
-  
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/add-product/:productId')
+  @ApiOperation({ summary: 'Add a product to cart' })
+  @ApiParam({ name: 'id', description: 'Cart ID', type: 'number' })
+  @ApiParam({ name: 'productId', description: 'Product ID', type: 'number' })
+  @ApiBody({ 
+    description: 'Product details including color, size and quantity',
+    schema: {
+      type: 'object',
+      properties: {
+        colorId: { type: 'number', description: 'ID of the color' },
+        sizeId: { type: 'number', description: 'ID of the size' },
+        quantity: { type: 'number', description: 'Quantity of the product', default: 1 }
+      }
+    }
+  })
+  @ApiResponse({ status: 200, description: 'Product added to cart successfully' })
+  @ApiResponse({ status: 404, description: 'Cart or Product not found' })
+  async addProductToCart(
+    @Param('id') cartId: string,
+    @Param('productId') productId: string,
+    @Body() body: { colorId?: number; sizeId?: number; quantity?: number }
+  ) {
+    return this.cartService.addProductToCart(
+      +cartId, 
+      +productId, 
+      body.colorId, 
+      body.sizeId, 
+      body.quantity || 1
+    );
+  }
 }

@@ -9,12 +9,16 @@ import { ProductModule } from 'src/product/product.module';
 import { CouponModule } from 'src/coupon/coupon.module';
 import { UserModule } from 'src/user/user.module';
 import { User } from 'src/user/entities/user.entity';
+import { ColorModule } from 'src/color/color.module';
+import { SizeModule } from 'src/size/size.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Cart, Coupon, Product, User]),
     ProductModule,
     CouponModule,
+    ColorModule,
+    SizeModule,
     forwardRef(() => UserModule)
   ],
   controllers: [CartController],
