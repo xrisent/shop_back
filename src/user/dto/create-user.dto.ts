@@ -14,6 +14,12 @@ export class CreateUserDto {
   surname: string;
 
   @ApiProperty({
+    description: 'Пароль',
+    type: String,
+  })
+  password: string
+
+  @ApiProperty({
     description: 'Номер телефона пользователя',
     type: String,
   })
@@ -34,7 +40,6 @@ export class CreateUserDto {
   @ApiProperty({
     description: 'Избранные элементы пользователя',
     type: [Number],
-    required: false,
   })
   favorites?: number[];
 }

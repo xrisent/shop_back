@@ -5,9 +5,11 @@ import {
   OneToMany,
   OneToOne,
   JoinColumn,
+  BeforeInsert,
 } from 'typeorm';
 import { Order } from 'src/order/entities/order.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
+import * as bcrypt from 'bcryptjs';
 
 @Entity()
 export class User {
@@ -29,6 +31,9 @@ export class User {
   @Column()
   address: string;
 
+  @Column()
+  password: string;
+
   @OneToMany(() => Order, (order) => order.user)
   history: Order[];
 
@@ -36,6 +41,15 @@ export class User {
   @JoinColumn()
   cart: Cart;
 
-  @Column('int', { array: true })
+  @Column('int', { array: true, default: [] })
   favorites: number[];
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  async comparePassword(attempt: string): Promise<boolean> {
+    return await bcrypt.compare(attempt, this.password);
+  }
 }

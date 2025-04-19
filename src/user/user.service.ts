@@ -18,17 +18,8 @@ export class UserService {
     const user = this.userRepository.create(createUserDto);
     await this.userRepository.save(user);
 
-    const createCartDto = {
-      userId: user.id,
-      content: [],
-      couponId: undefined, 
-      price: 0, 
-      couponPrice: 0
-    };
-
-    const cart = await this.cartService.create(createCartDto);
-
-    // Связываем пользователя с корзиной
+    const cart = await this.cartService.createForUser(user.id);
+    
     user.cart = cart;
     await this.userRepository.save(user);
 
@@ -42,6 +33,12 @@ export class UserService {
     return this.userRepository.findOne({
       where: { id },
       relations: ['history', 'cart', 'favorites'],
+    });
+  }
+
+  findOneEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { email },
     });
   }
 

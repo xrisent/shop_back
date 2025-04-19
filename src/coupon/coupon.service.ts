@@ -25,7 +25,10 @@ export class CouponService {
     return this.couponRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, updateCouponDto: UpdateCouponDto): Promise<Coupon | null> {
+  async update(
+    id: number,
+    updateCouponDto: UpdateCouponDto,
+  ): Promise<Coupon | null> {
     await this.couponRepository.update(id, updateCouponDto);
     return this.findOne(id);
   }

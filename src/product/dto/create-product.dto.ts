@@ -33,6 +33,18 @@ export class CreateProductDto {
   madeIn: string;
 
   @ApiProperty({
+    description: 'The brand of the product',
+    type: String,
+  })
+  brand: string;
+
+  @ApiProperty({
+    description: 'The material of the product',
+    type: String,
+  })
+  material: string;
+
+  @ApiProperty({
     description: 'The ID of the product category',
     type: Number,
   })

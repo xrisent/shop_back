@@ -22,6 +22,12 @@ export class Product {
   @Column()
   madeIn: string;
 
+  @Column()
+  brand: string;
+
+  @Column()
+  material: string;
+
   @ManyToOne(() => Category, (category) => category.products)
   category: Category;
 
