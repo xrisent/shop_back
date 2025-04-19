@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Order } from 'src/order/entities/order.entity';
 import { Cart } from 'src/cart/entities/cart.entity';
 
@@ -22,13 +29,13 @@ export class User {
   @Column()
   address: string;
 
-  @OneToMany(() => Order, order => order.user)
+  @OneToMany(() => Order, (order) => order.user)
   history: Order[];
 
-  @OneToOne(() => Cart, cart => cart.user)
+  @OneToOne(() => Cart, (cart) => cart.user)
   @JoinColumn()
   cart: Cart;
 
   @Column('int', { array: true })
-  favorites: number[]; // или можно @ManyToMany
+  favorites: number[];
 }

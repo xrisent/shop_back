@@ -21,6 +21,12 @@ export class CreateProductDto {
   price: number;
 
   @ApiProperty({
+    description: 'The old price of the product',
+    type: Number,
+  })
+  oldPrice: number;
+
+  @ApiProperty({
     description: 'The country where the product was made',
     type: String,
   })

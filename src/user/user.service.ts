@@ -4,17 +4,35 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CartService } from 'src/cart/cart.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly cartService: CartService,
   ) {}
 
-  create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(createUserDto);
-    return this.userRepository.save(user);
+    await this.userRepository.save(user);
+
+    const createCartDto = {
+      userId: user.id,
+      content: [],
+      couponId: undefined, 
+      price: 0, 
+      couponPrice: 0
+    };
+
+    const cart = await this.cartService.create(createCartDto);
+
+    // Связываем пользователя с корзиной
+    user.cart = cart;
+    await this.userRepository.save(user);
+
+    return user;
   }
 
   findAll(): Promise<User[]> {
