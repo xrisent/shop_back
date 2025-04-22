@@ -11,10 +11,12 @@ import { UserModule } from 'src/user/user.module';
 import { User } from 'src/user/entities/user.entity';
 import { ColorModule } from 'src/color/color.module';
 import { SizeModule } from 'src/size/size.module';
+import { Order } from 'src/order/entities/order.entity';
+import { OrderService } from 'src/order/order.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Cart, Coupon, Product, User]),
+    TypeOrmModule.forFeature([Cart, Coupon, Product, User, Order]),
     ProductModule,
     CouponModule,
     ColorModule,
@@ -22,7 +24,7 @@ import { SizeModule } from 'src/size/size.module';
     forwardRef(() => UserModule)
   ],
   controllers: [CartController],
-  providers: [CartService],
+  providers: [CartService, OrderService],
   exports: [CartService],
 })
 export class CartModule {}

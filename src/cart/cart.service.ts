@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cart } from './entities/cart.entity';
@@ -10,6 +10,8 @@ import { User } from 'src/user/entities/user.entity';
 import { Color } from 'src/color/entities/color.entity';
 import { Size } from 'src/size/entities/size.entity';
 import { CartItem } from 'src/cart-item/cart-item';
+import { OrderService } from 'src/order/order.service';
+import { Order } from 'src/order/entities/order.entity';
 
 @Injectable()
 export class CartService {
@@ -26,6 +28,7 @@ export class CartService {
     private readonly colorRepository: Repository<Color>,
     @InjectRepository(Size)
     private readonly sizeRepository: Repository<Size>,
+    private readonly orderService: OrderService,
   ) {}
 
   async calculatePrice(content: any[]): Promise<number> {
@@ -230,5 +233,32 @@ export class CartService {
     }
   
     return this.cartRepository.save(cart);
+  }
+
+  async checkout(cartId: number): Promise<Order> {
+    const cart = await this.cartRepository.findOne({
+      where: { id: cartId },
+      relations: ['user', 'coupon'],
+    });
+
+    if (!cart) {
+      throw new NotFoundException(`Cart with id ${cartId} not found`);
+    }
+
+    if (!cart.content || cart.content.length === 0) {
+      throw new BadRequestException('Cannot checkout an empty cart');
+    }
+
+    const order = await this.orderService.createFromCart(cart);
+
+    cart.content = [];
+    cart.price = 0;
+    cart.couponPrice = 0;
+    if (cart.coupon) {
+      cart.coupon = null;
+    }
+    await this.cartRepository.save(cart);
+
+    return order;
   }
 }

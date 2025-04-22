@@ -34,11 +34,11 @@ export class Product {
   @Column()
   createdAt: Date;
 
-  @Column()
-  mainImage: string;
+  @Column({ type: 'varchar', nullable: true })
+  mainImage: string | null;
 
-  @Column('text', { array: true })
-  additionalImages: string[];
+  @Column('text', { array: true, nullable: true }) 
+  additionalImages: string[] | null;
 
   @Column('json')
   stock: ProductStock[];

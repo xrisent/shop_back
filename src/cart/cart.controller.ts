@@ -20,6 +20,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { Order } from 'src/order/entities/order.entity';
 
 @ApiTags('Cart')
 @ApiBearerAuth()
@@ -91,30 +92,59 @@ export class CartController {
   @ApiOperation({ summary: 'Add a product to cart' })
   @ApiParam({ name: 'id', description: 'Cart ID', type: 'number' })
   @ApiParam({ name: 'productId', description: 'Product ID', type: 'number' })
-  @ApiBody({ 
+  @ApiBody({
     description: 'Product details including color, size and quantity',
     schema: {
       type: 'object',
       properties: {
         colorId: { type: 'number', description: 'ID of the color' },
         sizeId: { type: 'number', description: 'ID of the size' },
-        quantity: { type: 'number', description: 'Quantity of the product', default: 1 }
-      }
-    }
+        quantity: {
+          type: 'number',
+          description: 'Quantity of the product',
+          default: 1,
+        },
+      },
+    },
   })
-  @ApiResponse({ status: 200, description: 'Product added to cart successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Product added to cart successfully',
+  })
   @ApiResponse({ status: 404, description: 'Cart or Product not found' })
   async addProductToCart(
     @Param('id') cartId: string,
     @Param('productId') productId: string,
-    @Body() body: { colorId?: number; sizeId?: number; quantity?: number }
+    @Body() body: { colorId?: number; sizeId?: number; quantity?: number },
   ) {
     return this.cartService.addProductToCart(
-      +cartId, 
-      +productId, 
-      body.colorId, 
-      body.sizeId, 
-      body.quantity || 1
+      +cartId,
+      +productId,
+      body.colorId,
+      body.sizeId,
+      body.quantity || 1,
     );
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/checkout')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Checkout cart and create order' })
+  @ApiParam({ name: 'id', description: 'Cart ID', type: 'number' })
+  @ApiResponse({
+    status: 200,
+    description: 'Order created successfully from cart',
+    type: Order,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Cart not found or cart is empty',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request (e.g., empty cart)',
+  })
+  async checkoutCart(@Param('id') cartId: string) {
+    return this.cartService.checkout(+cartId);
   }
 }

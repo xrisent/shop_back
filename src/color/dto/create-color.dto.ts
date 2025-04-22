@@ -6,4 +6,10 @@ export class CreateColorDto {
     example: 'Красный',
   })
   color: string;
+
+  @ApiProperty({
+    description: 'Код цвета',
+    example: '№000000',
+  })
+  code: string;
 }

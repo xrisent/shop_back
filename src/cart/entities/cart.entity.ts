@@ -12,7 +12,7 @@ export class Cart {
   user: User;
 
   @ManyToOne(() => Coupon, { nullable: true, onDelete: 'SET NULL' })
-  coupon: Coupon; 
+  coupon: Coupon | null; 
 
   @Column()
   price: number;

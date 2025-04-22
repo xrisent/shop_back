@@ -17,8 +17,8 @@ export class Order {
   @Column()
   createdAt: Date;
 
-  @ManyToOne(() => Coupon)
-  coupon: Coupon;
+  @ManyToOne(() => Coupon, { nullable: true, onDelete: 'SET NULL' })
+  coupon: Coupon | null;
 
   @Column()
   finalPrice: number;
