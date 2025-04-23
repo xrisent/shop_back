@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cart } from './entities/cart.entity';
@@ -12,6 +12,7 @@ import { Size } from 'src/size/entities/size.entity';
 import { CartItem } from 'src/cart-item/cart-item';
 import { OrderService } from 'src/order/order.service';
 import { Order } from 'src/order/entities/order.entity';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class CartService {
@@ -29,6 +30,8 @@ export class CartService {
     @InjectRepository(Size)
     private readonly sizeRepository: Repository<Size>,
     private readonly orderService: OrderService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
   ) {}
 
   async calculatePrice(content: any[]): Promise<number> {
@@ -258,6 +261,8 @@ export class CartService {
       cart.coupon = null;
     }
     await this.cartRepository.save(cart);
+
+    const userOrder = await this.userService.addOrderToUser(+cart.user.id, +order.id);
 
     return order;
   }

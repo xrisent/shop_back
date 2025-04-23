@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Order } from 'src/order/entities/order.entity';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -42,4 +43,13 @@ export class CreateUserDto {
     type: [Number],
   })
   favorites?: number[];
+
+  @ApiProperty({
+    description: 'История заказов',
+    type: [Order],
+    required: false,
+    nullable: true,
+    isArray: true
+  })
+  history?: Order[];
 }

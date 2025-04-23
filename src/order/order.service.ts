@@ -52,8 +52,17 @@ export class OrderService {
       coupon: cart.coupon,
       finalPrice: cart.couponPrice,
       createdAt: bishkekTime,
+      sold: false
     });
 
+    return this.orderRepository.save(order);
+  }
+
+  async markAsSold(id: number): Promise<Order | null> {
+    const order = await this.orderRepository.findOne({ where: { id } });
+    if (!order) return null;
+  
+    order.sold = true;
     return this.orderRepository.save(order);
   }
 }

@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CartService } from 'src/cart/cart.service';
+import { Order } from 'src/order/entities/order.entity';
 
 @Injectable()
 export class UserService {
@@ -12,6 +13,8 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly cartService: CartService,
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -30,9 +33,10 @@ export class UserService {
     return this.userRepository.find({ relations: ['history', 'cart'] });
   }
   findOne(id: number): Promise<User | null> {
+    console.log(id)
     return this.userRepository.findOne({
       where: { id },
-      relations: ['history', 'cart', 'favorites'],
+      relations: ['history', 'cart'],
     });
   }
 
@@ -49,5 +53,19 @@ export class UserService {
 
   async remove(id: number): Promise<void> {
     await this.userRepository.delete(id);
+  }
+
+  async addOrderToUser(userId: number, orderId: number): Promise<Order> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['history'],
+    });
+    if (!user) throw new Error('User not found');
+
+    const order = await this.orderRepository.findOne({ where: { id: orderId } });
+    if (!order) throw new Error('Order not found');
+
+    order.user = user;
+    return await this.orderRepository.save(order);
   }
 }

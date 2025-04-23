@@ -53,4 +53,14 @@ export class OrderController {
   remove(@Param('id') id: string) {
     return this.orderService.remove(+id);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':id/sell')
+  @ApiOperation({ summary: 'Mark an order as sold' })
+  @ApiParam({ name: 'id', type: Number, description: 'Order ID' })
+  @ApiResponse({ status: 200, description: 'Order marked as sold' })
+  @ApiResponse({ status: 404, description: 'Order not found' })
+  markAsSold(@Param('id') id: string) {
+    return this.orderService.markAsSold(+id);
+}
 }

@@ -13,6 +13,7 @@ import { ColorModule } from 'src/color/color.module';
 import { SizeModule } from 'src/size/size.module';
 import { Order } from 'src/order/entities/order.entity';
 import { OrderService } from 'src/order/order.service';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { OrderService } from 'src/order/order.service';
     forwardRef(() => UserModule)
   ],
   controllers: [CartController],
-  providers: [CartService, OrderService],
+  providers: [CartService, OrderService, UserService],
   exports: [CartService],
 })
 export class CartModule {}

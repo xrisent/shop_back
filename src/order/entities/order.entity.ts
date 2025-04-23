@@ -8,7 +8,7 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, user => user.history)
+  @ManyToOne(() => User, (user) => user.history)
   user: User;
 
   @Column('json')
@@ -22,4 +22,7 @@ export class Order {
 
   @Column()
   finalPrice: number;
+
+  @Column()
+  sold: boolean;
 }
