@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Cart } from 'src/cart/entities/cart.entity';
+import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
+
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
   ) {}
 
   create(createOrderDto: CreateOrderDto): Promise<Order> {
@@ -59,8 +63,42 @@ export class OrderService {
   }
 
   async markAsSold(id: number): Promise<Order | null> {
-    const order = await this.orderRepository.findOne({ where: { id } });
+    const order = await this.orderRepository.findOne({
+      where: { id }
+    });
+  
     if (!order) return null;
+  
+    for (const item of order.products) {
+      const product = await this.productRepository.findOne({
+        where: { id: item.product.id }
+      });
+  
+      if (!product) {
+        throw new NotFoundException(`Product with id ${item.product.id} not found`);
+      }
+  
+      const colorId = item.color?.id ?? 0;
+      const sizeId = item.size?.id ?? 0;
+  
+      const stockIndex = product.stock.findIndex(s =>
+        s.color.id === colorId && s.size.id === sizeId
+      );
+  
+      if (stockIndex === -1) {
+        throw new NotFoundException(`Stock not found for product ${product.id} with color ${colorId} and size ${sizeId}`);
+      }
+  
+      if (product.stock[stockIndex].quantity < item.quantity) {
+        throw new BadRequestException(
+          `Not enough stock for product ${product.id} with color ${colorId} and size ${sizeId}`
+        );
+      }
+  
+      product.stock[stockIndex].quantity -= item.quantity;
+  
+      await this.productRepository.save(product);
+    }
   
     order.sold = true;
     return this.orderRepository.save(order);

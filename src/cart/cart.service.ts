@@ -1,4 +1,10 @@
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cart } from './entities/cart.entity';
@@ -89,8 +95,8 @@ export class CartService {
   }
 
   async createForUser(userId: number): Promise<Cart> {
-    const user = await this.userRepository.findOne({ 
-      where: { id: userId }
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
     });
 
     if (!user) {
@@ -170,71 +176,79 @@ export class CartService {
     productId: number,
     colorId?: number,
     sizeId?: number,
-    quantity: number = 1
+    quantity: number = 1,
   ): Promise<Cart> {
-    const cart = await this.cartRepository.findOne({ 
+    const cart = await this.cartRepository.findOne({
       where: { id: cartId },
-      relations: ['user', 'coupon']
+      relations: ['user', 'coupon'],
     });
     if (!cart) {
       throw new NotFoundException(`Cart with id ${cartId} not found`);
     }
-  
-    const product = await this.productRepository.findOne({ 
-      where: { id: productId }
+
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
     });
     if (!product) {
       throw new NotFoundException(`Product with id ${productId} not found`);
     }
-  
+
     let color: Color | undefined = undefined;
     if (colorId) {
-      const foundColor = await this.colorRepository.findOne({ where: { id: colorId } });
+      const foundColor = await this.colorRepository.findOne({
+        where: { id: colorId },
+      });
       if (!foundColor) {
         throw new NotFoundException(`Color with id ${colorId} not found`);
       }
       color = foundColor;
     }
-  
+
     let size: Size | undefined = undefined;
     if (sizeId) {
-      const foundSize = await this.sizeRepository.findOne({ where: { id: sizeId } });
+      const foundSize = await this.sizeRepository.findOne({
+        where: { id: sizeId },
+      });
       if (!foundSize) {
         throw new NotFoundException(`Size with id ${sizeId} not found`);
       }
       size = foundSize;
     }
-  
+
     const cartItem: CartItem = {
       product,
       color,
       size,
-      quantity
+      quantity,
     };
-  
+
     if (!cart.content) {
       cart.content = [];
     }
-  
-    const existingItemIndex = cart.content.findIndex(item => 
-      item.product.id === productId &&
-      (item.color?.id || undefined) === (colorId || undefined) &&
-      (item.size?.id || undefined) === (sizeId || undefined)
+
+    const existingItemIndex = cart.content.findIndex(
+      (item) =>
+        item.product.id === productId &&
+        (item.color?.id || undefined) === (colorId || undefined) &&
+        (item.size?.id || undefined) === (sizeId || undefined),
     );
-  
+
     if (existingItemIndex >= 0) {
       cart.content[existingItemIndex].quantity += quantity;
     } else {
       cart.content.push(cartItem);
     }
-  
+
     cart.price = await this.calculatePrice(cart.content);
     if (cart.coupon) {
-      cart.couponPrice = await this.calculateCouponDiscount(cart.price, cart.coupon.id);
+      cart.couponPrice = await this.calculateCouponDiscount(
+        cart.price,
+        cart.coupon.id,
+      );
     } else {
       cart.couponPrice = cart.price;
     }
-  
+
     return this.cartRepository.save(cart);
   }
 
@@ -262,7 +276,10 @@ export class CartService {
     }
     await this.cartRepository.save(cart);
 
-    const userOrder = await this.userService.addOrderToUser(+cart.user.id, +order.id);
+    const userOrder = await this.userService.addOrderToUser(
+      +cart.user.id,
+      +order.id,
+    );
 
     return order;
   }
