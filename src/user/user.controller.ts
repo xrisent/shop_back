@@ -6,10 +6,6 @@ import {
   Param,
   Delete,
   Put,
-  UseGuards,
-  Request,
-  UnauthorizedException,
-  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,15 +13,13 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
-  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuth } from 'src/auth/auth.decorator';
 
 @ApiTags('Users')
-@ApiBearerAuth()
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -37,14 +31,14 @@ export class UserController {
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'List of users returned' })
   findAll() {
     return this.userService.findAll();
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Get(':id')
   @ApiOperation({ summary: 'Get a user by ID' })
   @ApiParam({ name: 'id', type: Number })
@@ -53,7 +47,7 @@ export class UserController {
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Put(':id')
   @ApiOperation({ summary: 'Update a user by ID' })
   @ApiParam({ name: 'id', type: Number })
@@ -62,7 +56,7 @@ export class UserController {
   update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.userService.update(+id, dto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a user by ID' })
   @ApiParam({ name: 'id', type: Number })
@@ -71,7 +65,7 @@ export class UserController {
     return this.userService.remove(+id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Post(':userId/add-order/:orderId')
   @ApiOperation({ summary: 'Привязать заказ к пользователю' })
   @ApiParam({ name: 'userId', type: Number })

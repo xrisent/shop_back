@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -22,7 +22,7 @@ export class UserService {
     await this.userRepository.save(user);
 
     const cart = await this.cartService.createForUser(user.id);
-    
+
     user.cart = cart;
     await this.userRepository.save(user);
 
@@ -33,10 +33,20 @@ export class UserService {
     return this.userRepository.find({ relations: ['history', 'cart'] });
   }
   findOne(id: number): Promise<User | null> {
-    console.log(id)
     return this.userRepository.findOne({
       where: { id },
       relations: ['history', 'cart'],
+      select: [
+        'id',
+        'name',
+        'email',
+        'number',
+        'surname',
+        'address',
+        'favorites',
+        'cart',
+        'history',
+      ],
     });
   }
 
@@ -62,7 +72,9 @@ export class UserService {
     });
     if (!user) throw new Error('User not found');
 
-    const order = await this.orderRepository.findOne({ where: { id: orderId } });
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+    });
     if (!order) throw new Error('Order not found');
 
     order.user = user;

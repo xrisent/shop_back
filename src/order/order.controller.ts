@@ -1,16 +1,16 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuth } from 'src/auth/auth.decorator';
 
 @ApiTags('Orders')
-@ApiBearerAuth()
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Post()
   @ApiOperation({ summary: 'Create a new order' })
   @ApiResponse({ status: 201, description: 'The order has been successfully created.' })
@@ -18,14 +18,14 @@ export class OrderController {
   create(@Body() dto: CreateOrderDto) {
     return this.orderService.create(dto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Get()
   @ApiOperation({ summary: 'Get all orders' })
   @ApiResponse({ status: 200, description: 'List of all orders' })
   findAll() {
     return this.orderService.findAll();
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Get(':id')
   @ApiOperation({ summary: 'Get an order by ID' })
   @ApiParam({ name: 'id', type: Number, description: 'Order ID' })
@@ -34,7 +34,7 @@ export class OrderController {
   findOne(@Param('id') id: string) {
     return this.orderService.findOne(+id);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Put(':id')
   @ApiOperation({ summary: 'Update an existing order' })
   @ApiParam({ name: 'id', type: Number, description: 'Order ID' })
@@ -44,7 +44,7 @@ export class OrderController {
   update(@Param('id') id: string, @Body() dto: UpdateOrderDto) {
     return this.orderService.update(+id, dto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Delete(':id')
   @ApiOperation({ summary: 'Delete an order' })
   @ApiParam({ name: 'id', type: Number, description: 'Order ID' })
@@ -54,7 +54,7 @@ export class OrderController {
     return this.orderService.remove(+id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Put(':id/sell')
   @ApiOperation({ summary: 'Mark an order as sold' })
   @ApiParam({ name: 'id', type: Number, description: 'Order ID' })

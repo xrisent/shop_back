@@ -30,13 +30,14 @@ import {
 } from '@nestjs/platform-express';
 import { multerConfig } from 'src/config/multer.config';
 import { Multer } from 'multer';
+import { JwtAuth } from 'src/auth/auth.decorator';
 
 @ApiTags('Product')
 @ApiBearerAuth()
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Post()
   @ApiOperation({ summary: 'Создать продукт' })
   @ApiResponse({ status: 201, description: 'Продукт успешно создан' })
@@ -90,14 +91,14 @@ export class ProductController {
       stock: parsedStock,
     });
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Get()
   @ApiOperation({ summary: 'Получить список всех продуктов' })
   @ApiResponse({ status: 200, description: 'Список продуктов' })
   findAll() {
     return this.productService.findAll();
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Get(':id')
   @ApiOperation({ summary: 'Получить один продукт по ID' })
   @ApiParam({ name: 'id', description: 'ID продукта', type: Number })
@@ -106,7 +107,7 @@ export class ProductController {
   findOne(@Param('id') id: string) {
     return this.productService.findOne(+id);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Put(':id')
   @ApiOperation({ summary: 'Обновить продукт по ID' })
   @ApiParam({ name: 'id', description: 'ID продукта', type: Number })
@@ -116,7 +117,7 @@ export class ProductController {
   update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
     return this.productService.update(+id, dto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить продукт по ID' })
   @ApiParam({ name: 'id', description: 'ID продукта', type: Number })

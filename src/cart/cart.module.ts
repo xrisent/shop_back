@@ -14,6 +14,7 @@ import { SizeModule } from 'src/size/size.module';
 import { Order } from 'src/order/entities/order.entity';
 import { OrderService } from 'src/order/order.service';
 import { UserService } from 'src/user/user.service';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { UserService } from 'src/user/user.service';
     CouponModule,
     ColorModule,
     SizeModule,
-    forwardRef(() => UserModule)
+    forwardRef(() => UserModule),
+    JwtModule,
   ],
   controllers: [CartController],
   providers: [CartService, OrderService, UserService],

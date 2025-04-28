@@ -20,13 +20,13 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuth } from 'src/auth/auth.decorator';
 
 @ApiTags('Category')
-@ApiBearerAuth()
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Post()
   @ApiOperation({ summary: 'Создать новую категорию' })
   @ApiBody({ type: CreateCategoryDto })
@@ -35,14 +35,14 @@ export class CategoryController {
   create(@Body() dto: CreateCategoryDto) {
     return this.categoryService.create(dto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Get()
   @ApiOperation({ summary: 'Получить все категории' })
   @ApiResponse({ status: 200, description: 'Список категорий' })
   findAll() {
     return this.categoryService.findAll();
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Get(':id')
   @ApiOperation({ summary: 'Получить категорию по ID' })
   @ApiParam({ name: 'id', type: Number, description: 'ID категории' })
@@ -51,7 +51,7 @@ export class CategoryController {
   findOne(@Param('id') id: string) {
     return this.categoryService.findOne(+id);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Put(':id')
   @ApiOperation({ summary: 'Обновить категорию по ID' })
   @ApiParam({ name: 'id', type: Number, description: 'ID категории' })
@@ -61,7 +61,7 @@ export class CategoryController {
   update(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
     return this.categoryService.update(+id, dto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @JwtAuth()
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить категорию по ID' })
   @ApiParam({ name: 'id', type: Number, description: 'ID категории' })
