@@ -20,9 +20,6 @@ export class User {
   name: string;
 
   @Column()
-  surname: string;
-
-  @Column()
   number: string;
 
   @Column()

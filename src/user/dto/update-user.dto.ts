@@ -4,18 +4,11 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({
-    description: 'Имя пользователя',
+    description: 'ФИО пользователя',
     type: String,
     required: false,
   })
   name?: string;
-
-  @ApiProperty({
-    description: 'Фамилия пользователя',
-    type: String,
-    required: false,
-  })
-  surname?: string;
 
   @ApiProperty({
     description: 'Пароль',

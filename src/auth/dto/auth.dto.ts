@@ -14,9 +14,6 @@ export class RegisterUserDto {
   name: string;
 
   @ApiProperty()
-  surname: string;
-
-  @ApiProperty()
   number: string;
 
   @ApiProperty()

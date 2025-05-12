@@ -41,7 +41,6 @@ export class UserService {
         'name',
         'email',
         'number',
-        'surname',
         'address',
         'favorites',
         'cart',

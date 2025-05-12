@@ -3,16 +3,10 @@ import { Order } from 'src/order/entities/order.entity';
 
 export class CreateUserDto {
   @ApiProperty({
-    description: 'Имя пользователя',
+    description: 'ФИО пользователя',
     type: String,
   })
   name: string;
-
-  @ApiProperty({
-    description: 'Фамилия пользователя',
-    type: String,
-  })
-  surname: string;
 
   @ApiProperty({
     description: 'Пароль',
